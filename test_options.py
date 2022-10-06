@@ -82,7 +82,7 @@ class TestSum_translation(unittest.TestCase):
         __test._translation__d_args = {'--bravo': ['ba1', 'ba2'], '--charlie': [], '--delta': ['da1']}
 
         self.assertEqual(__test.values('bravo'), ['ba1', 'ba2'])
-        self.assertEqual(__test.values('charlie'), None)
+        self.assertEqual(__test.values('charlie'), [])
         self.assertEqual(__test.values('alpha'), None)
 
     def test_translate(self):
@@ -100,6 +100,10 @@ class TestSum_translation(unittest.TestCase):
         __d = {'-b': ['ba1', 'ba2'], '-c': [], '--delta': ['da1']}
         __test._replace_to_long(__d)
         self.assertEqual(__d, {'--bravo': ['ba1', 'ba2'], '--charlie': [], '--delta': ['da1']})
+
+    def test_update(self):
+
+        self.test_replace_to_long()
 
     def test_init(self):
             
