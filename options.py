@@ -1,3 +1,5 @@
+from cProfile import run
+from operator import mod
 import sys
 
 DEFAULT_PREFIX = '-'
@@ -75,7 +77,9 @@ class translation:
 
 default_translation = translation()
 
-def option(long: str, *shorts, tsl: translation = default_translation):
+# TODO: unittests
+
+def option(long: str, *shorts, required: bool = True, tsl: translation = default_translation):
 
     opt(long, *shorts, oset=tsl.oset)
     tsl.update()
@@ -84,15 +88,20 @@ def option(long: str, *shorts, tsl: translation = default_translation):
 
         def wrapper(*args, **kwargs):
 
-            if tsl.values(long) is None:
-                return False
-
             def modifier(*args, **kwargs):
                 result = func(*args, **kwargs)
-                return True if result is None else result
+                if result is None:
+                    return True if required else result
+                return result
 
-            nargs = list(args) + tsl.values(long)
-            return modifier(*nargs, **kwargs)
+            if tsl.values(long) is None and required:
+                return False
+
+            if tsl.values(long):            
+                args = list(args) + tsl.values(long)
+                return modifier(*args, **kwargs)
+
+            return modifier(*args, **kwargs)
 
         return wrapper
 
@@ -100,31 +109,21 @@ def option(long: str, *shorts, tsl: translation = default_translation):
 
 class var:
 
-    def __init__(self, value):
-        self.__call__(value)
+    def __init__(self, long, *shorts, value=None, tsl: translation = default_translation):
+        self.__tsl = tsl
+        self.__long = long
+        opt(self.__long, *shorts, oset=self.__tsl.oset)
+        self.__tsl.update()
+        if self.__tsl.isset(self.__long):
+            self.__call__(self.__tsl.values(self.__long))
+        else: self.__call__(value)
+
+    @property
+    def bool(self):
+        return self.__tsl.isset(self.__long)
 
     def __invert__(self):
         return self.__value
 
     def __call__(self, value):
         self.__value = value
-
-opt('alpha', 'a')
-opt('bravo', 'b')
-
-@option('alpha')
-def test(some_x, some_y, some_z=1):
-    print(some_x, some_y, some_z)
-    return int(some_x)*int(some_y)*int(some_z)
-
-@option('bravo')
-def test2(x, y):
-    print(x, y)
-
-if x := test(10, 10):
-    test2(x)
-
-c = var(100)
-b = c
-b(10)
-print(~c)
