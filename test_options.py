@@ -6,23 +6,23 @@ class TestSum_option(unittest.TestCase):
     def test_init(self):
 
         __set = set()
-        __test = option('alpha', oset=__set)
+        __test = opt('alpha', oset=__set)
         self.assertTrue(__test in __set)
 
     def test_str(self):
 
-        __test = option('bravo', oset=set())
+        __test = opt('bravo', oset=set())
         self.assertEqual(str(__test), 'bravo')
 
     def test_hash(self):
 
-        __test = option('charlie', oset=set())
+        __test = opt('charlie', oset=set())
         self.assertEqual(hash(__test), hash(str(__test)))
 
     def test_iter(self):
 
         __short_names = ['d', 'del', 'D']
-        __test = option('delta', *__short_names, oset=set())
+        __test = opt('delta', *__short_names, oset=set())
 
         __test_iter_list = []
         for __x in __test:
@@ -33,7 +33,7 @@ class TestSum_option(unittest.TestCase):
     def test_next(self):
 
         __short_names = ['e', 'eo', 'E']
-        __test = option('echo', *__short_names, oset=set())
+        __test = opt('echo', *__short_names, oset=set())
 
         __s_iter = iter(__short_names)
         __t_iter = iter(__test)
@@ -50,9 +50,9 @@ class TestSum_translation(unittest.TestCase):
 
     test_args = 'script.py arg1 arg2 -b ba1 ba2 -c --delta da1'.split(' ')
     o_set = set()
-    option('bravo', 'b', oset=o_set)
-    option('charlie', 'c', oset=o_set)
-    option('delta', 'd', oset=o_set)
+    opt('bravo', 'b', oset=o_set)
+    opt('charlie', 'c', oset=o_set)
+    opt('delta', 'd', oset=o_set)
 
     def test_prefix(self):
 
